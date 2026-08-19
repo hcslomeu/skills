@@ -1,0 +1,19 @@
+{
+  "name": "hcslomeu",
+  "owner": {
+    "name": "Humberto Lomeu",
+    "url": "https://github.com/hcslomeu"
+  },
+  "description": "Agent skills by Humberto Lomeu",
+  "plugins": [
+    {
+      "name": "session-handover",
+      "source": {
+        "source": "github",
+        "repo": "hcslomeu/session-handover"
+      },
+      "description": "Session handover that records AI-reviewer thread dispositions, so a fresh session does not reopen settled arguments",
+      "version": "0.1.0"
+    }
+  ]
+}
