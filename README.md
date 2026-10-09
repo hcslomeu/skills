@@ -1,43 +1,36 @@
 # skills
 
-Plugin catalogue for the agent skills I publish. Each skill lives in its own
-repository; this repo holds only the manifest that lists them.
+Agent skills I publish. Every skill lives in this repository under `skills/<name>/`, and the whole set installs as one plugin.
 
-## Use
+## Install
 
-From inside Claude Code:
+Claude Code, as a plugin that updates itself:
 
 ```
 /plugin marketplace add hcslomeu/skills
-/plugin install session-handover@hcslomeu
+/plugin install hcslomeu-skills@hcslomeu
 ```
 
-Update later with `/plugin marketplace update`.
+Any agent supported by [skills](https://github.com/vercel-labs/skills), as editable copies:
+
+```
+npx skills add hcslomeu/skills
+```
+
+Pick one per agent: installing both gives you every skill twice.
 
 ## Available
 
-| Plugin | What it does |
-| ------ | ------------ |
-| [session-handover](https://github.com/hcslomeu/session-handover) | Resume prompt for a cleared session that records which AI-reviewer comments you accepted, disputed or left pending |
-
-## Why the catalogue is its own repo
-
-A marketplace name is registered once per user: adding a second marketplace
-called `hcslomeu` would replace the first rather than extend it, so every
-plugin published under `@hcslomeu` has to be listed in this one file. Keeping
-that file here, instead of inside one of the skill repositories, means the
-catalogue outlives any individual skill and the install address stays the same
-as skills are added, renamed or retired.
+| Skill | What it does |
+| ----- | ------------ |
+| [handover](skills/session-handover) | Resume prompt for a cleared session that records which AI-reviewer comments you accepted, disputed or left pending |
 
 ## Adding a skill
 
-1. Create a repository for the skill with `.claude-plugin/plugin.json` and a
-   `SKILL.md` at the root. A root `SKILL.md` with no `skills/` directory is
-   loaded as a single-skill plugin; set `name` in its frontmatter so the
-   invocation name stays stable across updates.
-2. Add an entry to `plugins` in `.claude-plugin/marketplace.json` here, with a
-   `github` source pointing at that repository.
-3. Run `claude plugin validate .` before pushing.
+1. Put it in `skills/<name>/SKILL.md`, with `name` and `description` in the frontmatter. Without `name`, the invocation name falls back to the install directory, which changes between installers.
+2. Add `./skills/<name>` to `skills` in `.claude-plugin/plugin.json`, add a row to the table above, and bump `version` in that file.
+3. Check the skill names nothing personal: no local paths, no private repositories, nothing that only exists on my machine.
+4. Run `claude plugin validate .` before pushing.
 
 ## Licence
 

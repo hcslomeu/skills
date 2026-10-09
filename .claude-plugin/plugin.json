@@ -1,0 +1,14 @@
+{
+  "name": "hcslomeu-skills",
+  "version": "0.2.0",
+  "description": "Agent skills by Humberto Lomeu",
+  "author": {
+    "name": "Humberto Lomeu",
+    "url": "https://github.com/hcslomeu"
+  },
+  "repository": "https://github.com/hcslomeu/skills",
+  "license": "MIT",
+  "skills": [
+    "./skills/session-handover"
+  ]
+}
