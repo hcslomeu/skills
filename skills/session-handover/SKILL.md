@@ -1,6 +1,6 @@
 ---
 name: handover
-description: Generate a structured session-resume prompt before /clear or starting a fresh session. Use when the user wants to carry forward project state, pending work, active task info, running background processes, open AI-reviewer threads (Claude, Codex, CodeRabbit, Gemini), or session-specific knowledge into a new conversation. Triggers on phrases like "handover", "session handover", "resume prompt", "before I clear", "/handover", or any request to summarise current session state for continuation.
+description: Generate a structured session-resume prompt before /clear or starting a fresh session. Use when the user wants to carry forward project state, pending work, active task info, running background processes, open AI-reviewer threads (Claude, Codex, CodeRabbit, Gemini), decisions the owner made that are not written down yet, questions to ask the owner before acting, or session-specific knowledge into a new conversation. Triggers on phrases like "handover", "session handover", "resume prompt", "before I clear", "/handover", or any request to summarise current session state for continuation.
 ---
 
 # Session Handover
@@ -131,7 +131,15 @@ Re-hydrate reviewer state on demand:
 - Default: <serial or parallel teammates>
 - Caveats: <worktree isolation gotchas, etc., or none>
 
-## 11. Immediate next action
+## 11. Owner decisions not yet on disk
+- <decision or preference> | Why: <owner's reason> | Applies to: <scope>
+(If there are none, write: none, every decision is already in a file.)
+
+## 12. Ask the owner before acting
+- <question only the owner can answer> | Assumed meanwhile: <default, or none>
+(If there are none, write: none, nothing to confirm.)
+
+## 13. Immediate next action
 <single concrete first step, actionable within 30 seconds>
 ```
 
@@ -141,7 +149,9 @@ What qualifies for each section. The template fixes the shape; these notes fix
 the content.
 
 1. **Project context.** The rules that would surprise a fresh session if
-   violated, not a general project description.
+   violated, not a general project description. Rules already written in the
+   repository go here as a pointer; decisions the owner made in this session
+   that no file records yet go in section 11.
 2. **Bootstrap.** The files the next session must read first, in order.
    Discover them, do not assume them: look at what this repository actually
    keeps. Typically agent instructions (`CLAUDE.md`, `AGENTS.md`), a progress
@@ -154,7 +164,8 @@ the content.
    whereas a command returns current truth whenever it is run.
 3. **State.** What is on disk and in git: last completed `TASK_UNIT` and its PR
    with hash and number, branches still open, uncommitted changes, and any
-   knowledge the session holds that has not been written down anywhere.
+   facts the session learned that have not been written down anywhere. What
+   the owner *decided* belongs in section 11, not here.
 4. **Running state.** What is alive but not on disk, and therefore lost
    entirely when the session is cleared. Background shells started with
    `run_in_background` must be listed with their **shell ID**: without the ID
@@ -194,8 +205,27 @@ the content.
    integrations.
 10. **Parallelism.** The current default and any caveats discovered during the
     session.
-11. **Immediate next action.** One concrete step. If a review thread is the
-    next action, name the reviewer, the PR and the `file:line`.
+11. **Owner decisions not yet on disk.** Choices and preferences the owner
+    stated in this session, each with the reason they gave, that no file in
+    the repository or the agent instructions records yet: a process rule
+    ("the napkin goes in the task PR, not its own"), a scope cut, a rejected
+    edge case, a repository that is retired, a constraint about the business,
+    budget or deadline. These are what a fresh session gets wrong most often,
+    because the state sections carry the task but not the owner's rules for
+    doing it. One line each; the reason matters, because without it the next
+    session cannot tell a firm rule from a passing remark. If a decision is
+    already in a file, leave it out and cite the file in Bootstrap instead.
+12. **Ask the owner before acting.** What the next session must confirm before
+    it starts, because only the owner knows: the goal behind the next step,
+    its audience, a constraint this session did not settle, or anything that
+    may have been decided elsewhere since this handover was written. Give the
+    default this session would assume, so the owner can answer with a yes.
+    Leave out anything the repository or a command can answer. When this
+    section is not `none`, the immediate next action is to ask these questions
+    and wait for the answers.
+13. **Immediate next action.** One concrete step. If a review thread is the
+    next action, name the reviewer, the PR and the `file:line`. If section 12
+    has questions, the step is asking them.
 
 ## Anti-patterns
 
@@ -205,10 +235,14 @@ the content.
   The next session runs the `gh` commands from Bootstrap to fetch the full text
   on demand.
 - Don't restate generic `CLAUDE.md` content the next session will re-load on
-  its own. Focus on session-specific deltas and active state.
+  its own. Focus on session-specific deltas and active state. Section 11 does
+  not break this rule: it holds only what is not written anywhere yet.
 - Don't paraphrase ADRs or specs already on disk; cite them by path.
 - Don't include conversation chronology or "what we tried" narratives. A
-  handover is forward-looking state, not a session log.
+  handover is forward-looking state, not a session log. A decision and its
+  reason go in section 11; the discussion that led to it does not.
+- Don't fill section 12 with questions the next session can answer itself by
+  reading files or running commands. It is for what only the owner knows.
 - Don't add a session-summary preamble in the chat language before the fenced
   block; the user wants to copy and paste, not read narrative.
 - Don't drop a section because it is empty. Write `none` and move on.
@@ -216,7 +250,8 @@ the content.
 ## Curation hint
 
 If the current session uncovered a recurring lesson worth keeping beyond the
-next session, raise it *separately* from the handover and let the user decide
+next session, raise it *separately* from the handover, even when it also
+appears in section 11 so that it survives the next hop, and let the user decide
 where it lives: agent instructions, an ADR, a runbook, whatever the project
 already keeps.
 
@@ -225,6 +260,8 @@ state that expires the moment the next session absorbs it. A lesson is durable
 and belongs wherever the project is read from at the start of every session.
 Putting a durable lesson in a handover loses it after one hop; putting
 transient state in a long-lived document slowly turns a runbook into a log.
+Section 11 is the bridge between them: it carries an unwritten decision for
+one hop, and the curation suggestion is how it gets written down for good.
 
 Suggest, don't write. This skill produces a handover and nothing else. It never
 creates or edits project files.
