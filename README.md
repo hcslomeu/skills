@@ -23,7 +23,7 @@ Pick one per agent: installing both gives you every skill twice.
 
 | Skill | What it does |
 | ----- | ------------ |
-| [handover](skills/session-handover) | Resume prompt for a cleared session that records which AI-reviewer comments you accepted, disputed or left pending |
+| [handover](skills/session-handover) | Resume prompt for a cleared session that records which AI-reviewer comments you accepted, disputed or left pending, the decisions you made that no file holds yet, and what to ask you before acting |
 
 ## Adding a skill
 
